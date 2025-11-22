@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chronometer - UKMO & CNTIC</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 50%, #ffffff 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            color: #2c3e50;
+        }
+
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
+            padding: 1.5rem 2rem;
+            border-bottom: 2px solid rgba(52, 152, 219, 0.1);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .logo-box {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.8rem 1.5rem;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        .logo-box:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+        }
+
+        .logo-box img {
+            height: 50px;
+            width: auto;
+        }
+
+        .logo-text {
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 0.9rem;
+        }
+
+        main {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .timer-container {
+            background: white;
+            padding: 3rem;
+            border-radius: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        h1 {
+            font-size: 2rem;
+            color: #2c3e50;
+            margin-bottom: 2rem;
+            font-weight: 700;
+        }
+
+        .timer-display {
+            font-size: 5rem;
+            font-weight: 700;
+            color: #3498db;
+            font-family: 'Courier New', monospace;
+            margin: 2rem 0;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            letter-spacing: 0.1em;
+        }
+
+        .milliseconds {
+            font-size: 3rem;
+            color: #7f8c8d;
+        }
+
+        .controls {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 1rem 2.5rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .start-btn {
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+            color: white;
+        }
+
+        .start-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(46, 204, 113, 0.4);
+        }
+
+        .pause-btn {
+            background: linear-gradient(135deg, #f39c12 0%, #f1c40f 100%);
+            color: white;
+        }
+
+        .pause-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(243, 156, 18, 0.4);
+        }
+
+        .reset-btn {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+        }
+
+        .reset-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
+        }
+
+        .fullscreen-btn {
+            background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
+            color: white;
+        }
+
+        .fullscreen-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(155, 89, 182, 0.4);
+        }
+
+        .lap-btn {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+        }
+
+        .lap-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .laps-container {
+            margin-top: 2rem;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .laps-title {
+            font-size: 1.2rem;
+            color: #2c3e50;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .lap-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.8rem 1.5rem;
+            margin: 0.5rem 0;
+            background: #f8f9fa;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .lap-item:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+        }
+
+        .lap-number {
+            font-weight: 600;
+            color: #3498db;
+        }
+
+        .lap-time {
+            font-family: 'Courier New', monospace;
+            color: #2c3e50;
+        }
+
+        footer {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 1.5rem;
+            text-align: center;
+            color: #7f8c8d;
+            border-top: 2px solid rgba(52, 152, 219, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .timer-display {
+                font-size: 3.5rem;
+            }
+
+            .milliseconds {
+                font-size: 2rem;
+            }
+
+            button {
+                padding: 0.8rem 1.5rem;
+                font-size: 0.9rem;
+            }
+
+            .timer-container {
+                padding: 2rem 1.5rem;
+            }
+        }
+
+        .laps-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .laps-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .laps-container::-webkit-scrollbar-thumb {
+            background: #3498db;
+            border-radius: 10px;
+        }
+
+        .laps-container::-webkit-scrollbar-thumb:hover {
+            background: #2980b9;
+        }
+
+        /* Fullscreen styles */
+        body:fullscreen,
+        body:-webkit-full-screen,
+        body:-moz-full-screen {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+        }
+
+        body:fullscreen .timer-container,
+        body:-webkit-full-screen .timer-container,
+        body:-moz-full-screen .timer-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            max-width: 90%;
+            padding: 4rem;
+        }
+
+        body:fullscreen .timer-display,
+        body:-webkit-full-screen .timer-display,
+        body:-moz-full-screen .timer-display {
+            font-size: 8rem;
+            color: #ffffff;
+            text-shadow: 0 0 30px rgba(52, 152, 219, 0.8);
+        }
+
+        body:fullscreen .milliseconds,
+        body:-webkit-full-screen .milliseconds,
+        body:-moz-full-screen .milliseconds {
+            font-size: 5rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        body:fullscreen h1,
+        body:-webkit-full-screen h1,
+        body:-moz-full-screen h1 {
+            color: #ffffff;
+        }
+
+        body:fullscreen .laps-title,
+        body:-webkit-full-screen .laps-title,
+        body:-moz-full-screen .laps-title {
+            color: #ffffff;
+        }
+
+        body:fullscreen .lap-item,
+        body:-webkit-full-screen .lap-item,
+        body:-moz-full-screen .lap-item {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        body:fullscreen .lap-number,
+        body:-webkit-full-screen .lap-number,
+        body:-moz-full-screen .lap-number {
+            color: #3498db;
+        }
+
+        body:fullscreen .lap-time,
+        body:-webkit-full-screen .lap-time,
+        body:-moz-full-screen .lap-time {
+            color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="logo-box">
+                <img src="universite-kasdi-merbah-ouargla-91530.png" alt="University Logo">
+                <span class="logo-text">Université Kasdi Merbah</span>
+            </div>
+            <h1 style="margin: 0; font-size: 1.5rem;">⏱️ Chronometer</h1>
+            <div class="logo-box">
+                <img src="cntic_icon.jpg" alt="CNTIC Logo">
+                <span class="logo-text">CNTIC Club</span>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="timer-container">
+            <h1>Precision Timer</h1>
+            
+            <div class="timer-display">
+                <span id="display">00:00:00</span>
+                <span class="milliseconds" id="milliseconds">.000</span>
+            </div>
+
+            <div class="controls">
+                <button class="start-btn" id="startBtn">Start</button>
+                <button class="pause-btn" id="pauseBtn" disabled>Pause</button>
+                <button class="lap-btn" id="lapBtn" disabled>Lap</button>
+                <button class="reset-btn" id="resetBtn">Reset</button>
+                <button class="fullscreen-btn" id="fullscreenBtn">⛶ Fullscreen</button>
+            </div>
+
+            <div class="laps-container" id="lapsContainer" style="display: none;">
+                <div class="laps-title">Lap Times</div>
+                <div id="lapsList"></div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>© 2025 University Kasdi Merbah - CNTIC Club | Ouargla, Algeria</p>
+    </footer>
+
+    <script>
+        let startTime = 0;
+        let elapsedTime = 0;
+        let timerInterval;
+        let isRunning = false;
+        let lapCounter = 0;
+
+        const display = document.getElementById('display');
+        const milliseconds = document.getElementById('milliseconds');
+        const startBtn = document.getElementById('startBtn');
+        const pauseBtn = document.getElementById('pauseBtn');
+        const lapBtn = document.getElementById('lapBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const fullscreenBtn = document.getElementById('fullscreenBtn');
+        const lapsContainer = document.getElementById('lapsContainer');
+        const lapsList = document.getElementById('lapsList');
+
+        function formatTime(ms) {
+            const totalSeconds = Math.floor(ms / 1000);
+            const hours = Math.floor(totalSeconds / 3600);
+            const minutes = Math.floor((totalSeconds % 3600) / 60);
+            const seconds = totalSeconds % 60;
+            const millisecond = ms % 1000;
+
+            return {
+                time: `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`,
+                ms: `.${String(millisecond).padStart(3, '0')}`
+            };
+        }
+
+        function updateDisplay() {
+            const currentTime = Date.now();
+            elapsedTime = currentTime - startTime;
+            const formatted = formatTime(elapsedTime);
+            display.textContent = formatted.time;
+            milliseconds.textContent = formatted.ms;
+        }
+
+        function start() {
+            if (!isRunning) {
+                startTime = Date.now() - elapsedTime;
+                timerInterval = setInterval(updateDisplay, 10);
+                isRunning = true;
+                
+                startBtn.disabled = true;
+                pauseBtn.disabled = false;
+                lapBtn.disabled = false;
+                startBtn.textContent = 'Resume';
+            }
+        }
+
+        function pause() {
+            if (isRunning) {
+                clearInterval(timerInterval);
+                isRunning = false;
+                
+                startBtn.disabled = false;
+                pauseBtn.disabled = true;
+                lapBtn.disabled = true;
+            }
+        }
+
+        function reset() {
+            clearInterval(timerInterval);
+            isRunning = false;
+            elapsedTime = 0;
+            lapCounter = 0;
+            
+            display.textContent = '00:00:00';
+            milliseconds.textContent = '.000';
+            lapsList.innerHTML = '';
+            lapsContainer.style.display = 'none';
+            
+            startBtn.disabled = false;
+            pauseBtn.disabled = true;
+            lapBtn.disabled = true;
+            startBtn.textContent = 'Start';
+        }
+
+        function addLap() {
+            if (isRunning) {
+                lapCounter++;
+                const formatted = formatTime(elapsedTime);
+                
+                const lapItem = document.createElement('div');
+                lapItem.className = 'lap-item';
+                lapItem.innerHTML = `
+                    <span class="lap-number">Lap ${lapCounter}</span>
+                    <span class="lap-time">${formatted.time}${formatted.ms}</span>
+                `;
+                
+                lapsList.insertBefore(lapItem, lapsList.firstChild);
+                lapsContainer.style.display = 'block';
+            }
+        }
+
+        function toggleFullscreen() {
+            if (!document.fullscreenElement && !document.webkitFullscreenElement && !document.mozFullScreenElement) {
+                // Enter fullscreen
+                if (document.documentElement.requestFullscreen) {
+                    document.documentElement.requestFullscreen();
+                } else if (document.documentElement.webkitRequestFullscreen) {
+                    document.documentElement.webkitRequestFullscreen();
+                } else if (document.documentElement.mozRequestFullScreen) {
+                    document.documentElement.mozRequestFullScreen();
+                }
+                fullscreenBtn.textContent = '⛶ Exit Fullscreen';
+            } else {
+                // Exit fullscreen
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                } else if (document.mozCancelFullScreen) {
+                    document.mozCancelFullScreen();
+                }
+                fullscreenBtn.textContent = '⛶ Fullscreen';
+            }
+        }
+
+        // Listen for fullscreen changes
+        document.addEventListener('fullscreenchange', () => {
+            if (!document.fullscreenElement) {
+                fullscreenBtn.textContent = '⛶ Fullscreen';
+            }
+        });
+
+        document.addEventListener('webkitfullscreenchange', () => {
+            if (!document.webkitFullscreenElement) {
+                fullscreenBtn.textContent = '⛶ Fullscreen';
+            }
+        });
+
+        document.addEventListener('mozfullscreenchange', () => {
+            if (!document.mozFullScreenElement) {
+                fullscreenBtn.textContent = '⛶ Fullscreen';
+            }
+        });
+
+        startBtn.addEventListener('click', start);
+        pauseBtn.addEventListener('click', pause);
+        resetBtn.addEventListener('click', reset);
+        lapBtn.addEventListener('click', addLap);
+        fullscreenBtn.addEventListener('click', toggleFullscreen);
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space') {
+                e.preventDefault();
+                if (!isRunning && !startBtn.disabled) {
+                    start();
+                } else if (isRunning) {
+                    pause();
+                }
+            } else if (e.code === 'KeyR') {
+                reset();
+            } else if (e.code === 'KeyL' && isRunning) {
+                addLap();
+            } else if (e.code === 'KeyF') {
+                toggleFullscreen();
+            }
+        });
+    </script>
+</body>
+</html>
