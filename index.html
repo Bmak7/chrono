@@ -346,6 +346,130 @@
             transform: translateX(30px);
         }
 
+        .alarm-mode-selector {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            padding: 0.8rem 1.5rem;
+            background: white;
+            border-radius: 10px;
+            border: 2px solid #ddd;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .radio-option:hover {
+            border-color: #3498db;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(52, 152, 219, 0.2);
+        }
+
+        .radio-option input[type="radio"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .radio-option input[type="radio"]:checked + span {
+            color: #3498db;
+        }
+
+        .radio-option:has(input[type="radio"]:checked) {
+            border-color: #3498db;
+            background: linear-gradient(135deg, #ebf5fb 0%, #d6eaf8 100%);
+        }
+
+        .interval-duration-container {
+            margin-bottom: 1.5rem;
+            padding: 1.5rem;
+            background: white;
+            border-radius: 15px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .interval-time-inputs {
+            margin-bottom: 1rem;
+        }
+
+        .duration-slider-group {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .duration-slider-group label {
+            font-weight: 600;
+            color: #2c3e50;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+
+        .duration-slider-group label span {
+            color: #3498db;
+            font-size: 1.3rem;
+        }
+
+        .duration-slider-group input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: linear-gradient(to right, #3498db 0%, #2ecc71 100%);
+            outline: none;
+            -webkit-appearance: none;
+            cursor: pointer;
+        }
+
+        .duration-slider-group input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: white;
+            border: 3px solid #3498db;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(52, 152, 219, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .duration-slider-group input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.6);
+        }
+
+        .duration-slider-group input[type="range"]::-moz-range-thumb {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: white;
+            border: 3px solid #3498db;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(52, 152, 219, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .duration-slider-group input[type="range"]::-moz-range-thumb:hover {
+            transform: scale(1.2);
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.6);
+        }
+
+        .slider-markers {
+            display: flex;
+            justify-content: space-between;
+            padding: 0 5px;
+            font-size: 0.75rem;
+            color: #7f8c8d;
+            font-weight: 600;
+        }
+
         .alarm-inputs {
             display: flex;
             justify-content: center;
@@ -663,7 +787,19 @@
                         <span class="slider"></span>
                     </label>
                 </div>
-                <div class="alarm-inputs">
+                
+                <div class="alarm-mode-selector">
+                    <label class="radio-option">
+                        <input type="radio" name="alarmMode" value="single" checked>
+                        <span>Single Alarm</span>
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="alarmMode" value="interval">
+                        <span>Interval Soni</span>
+                    </label>
+                </div>
+
+                <div class="alarm-inputs" id="singleAlarmInputs">
                     <div class="time-input-group">
                         <input type="number" id="alarmHours" min="0" max="23" value="0" placeholder="HH">
                         <label>Hours</label>
@@ -679,12 +815,52 @@
                         <label>Seconds</label>
                     </div>
                 </div>
+
+                <div class="interval-duration-container" id="intervalDurationContainer" style="display: none;">
+                    <div class="interval-time-inputs">
+                        <label style="font-weight: 600; color: #2c3e50; margin-bottom: 1rem; display: block; text-align: center;">Interval Every:</label>
+                        <div class="alarm-inputs" style="margin-bottom: 0;">
+                            <div class="time-input-group">
+                                <input type="number" id="intervalHours" min="0" max="23" value="0" placeholder="HH">
+                                <label>Hours</label>
+                            </div>
+                            <span class="colon">:</span>
+                            <div class="time-input-group">
+                                <input type="number" id="intervalMinutes" min="0" max="59" value="0" placeholder="MM">
+                                <label>Minutes</label>
+                            </div>
+                            <span class="colon">:</span>
+                            <div class="time-input-group">
+                                <input type="number" id="intervalSeconds" min="0" max="59" value="10" placeholder="SS">
+                                <label>Seconds</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="duration-slider-group" style="margin-top: 1.5rem;">
+                        <label for="soniDuration">Sound Duration: <span id="soniDurationValue">3</span> seconds</label>
+                        <input type="range" id="soniDuration" min="1" max="10" value="3" step="1">
+                        <div class="slider-markers">
+                            <span>1s</span>
+                            <span>2s</span>
+                            <span>3s</span>
+                            <span>4s</span>
+                            <span>5s</span>
+                            <span>6s</span>
+                            <span>7s</span>
+                            <span>8s</span>
+                            <span>9s</span>
+                            <span>10s</span>
+                        </div>
+                    </div>
+                </div>
                 <div class="alarm-status" id="alarmStatus">
                     <span id="alarmStatusText">Alarm disabled</span>
                 </div>
                 <div class="sound-selector">
                     <label>Alarm Sound:</label>
                     <select id="soundSelect">
+                        <option value="cntic-alarm">Cntic</option>
                         <option value="beep">Beep</option>
                         <option value="bell">Bell</option>
                         <option value="chime">Chime</option>
@@ -711,327 +887,510 @@
     </div>
 
     <script>
-        let startTime = 0;
-        let elapsedTime = 0;
-        let timerInterval;
-        let isRunning = false;
-        let lapCounter = 0;
-        let alarmEnabled = false;
-        let alarmTime = 0;
-        let alarmTriggered = false;
-        let audioContext;
-        let currentSound = 'beep';
+      let startTime = 0;
+      let elapsedTime = 0;
+      let timerInterval;
+      let isRunning = false;
+      let lapCounter = 0;
+      let alarmEnabled = false;
+      let alarmTime = 0;
+      let alarmTriggered = false;
+      let audioContext;
+      let currentSound = 'cntic-alarm';
+      let alarmMode = 'single'; // 'single' or 'interval'
+      let lastAlarmTrigger = 0; // Track last alarm trigger time for intervals
+      let intervalSoniCount = 0; // Count how many times interval soni has played
+      let soniDuration = 3; // How long the sound plays (in seconds)
+      let soniTimeout = null; // Timeout for stopping the sound
 
-        const display = document.getElementById('display');
-        const milliseconds = document.getElementById('milliseconds');
-        const startBtn = document.getElementById('startBtn');
-        const pauseBtn = document.getElementById('pauseBtn');
-        const lapBtn = document.getElementById('lapBtn');
-        const resetBtn = document.getElementById('resetBtn');
-        const fullscreenBtn = document.getElementById('fullscreenBtn');
-        const lapsContainer = document.getElementById('lapsContainer');
-        const lapsList = document.getElementById('lapsList');
-        const alarmToggle = document.getElementById('alarmToggle');
-        const alarmHours = document.getElementById('alarmHours');
-        const alarmMinutes = document.getElementById('alarmMinutes');
-        const alarmSeconds = document.getElementById('alarmSeconds');
-        const alarmStatus = document.getElementById('alarmStatus');
-        const alarmStatusText = document.getElementById('alarmStatusText');
-        const soundSelect = document.getElementById('soundSelect');
-        const notificationModal = document.getElementById('notificationModal');
-        const overlay = document.getElementById('overlay');
-        const dismissAlarm = document.getElementById('dismissAlarm');
-        const timerContainer = document.querySelector('.timer-container');
+      // Add an Audio object for the WAV file
+      const wavAlarm = new Audio('cntic-alarm.wav');
+      wavAlarm.loop = true; // loop until dismissed
 
-        function formatTime(ms) {
-            const totalSeconds = Math.floor(ms / 1000);
-            const hours = Math.floor(totalSeconds / 3600);
-            const minutes = Math.floor((totalSeconds % 3600) / 60);
-            const seconds = totalSeconds % 60;
-            const millisecond = ms % 1000;
+      const display = document.getElementById('display');
+      const milliseconds = document.getElementById('milliseconds');
+      const startBtn = document.getElementById('startBtn');
+      const pauseBtn = document.getElementById('pauseBtn');
+      const lapBtn = document.getElementById('lapBtn');
+      const resetBtn = document.getElementById('resetBtn');
+      const fullscreenBtn = document.getElementById('fullscreenBtn');
+      const lapsContainer = document.getElementById('lapsContainer');
+      const lapsList = document.getElementById('lapsList');
+      const alarmToggle = document.getElementById('alarmToggle');
+      const alarmHours = document.getElementById('alarmHours');
+      const alarmMinutes = document.getElementById('alarmMinutes');
+      const alarmSeconds = document.getElementById('alarmSeconds');
+      const alarmStatus = document.getElementById('alarmStatus');
+      const alarmStatusText = document.getElementById('alarmStatusText');
+      const soundSelect = document.getElementById('soundSelect');
+      const notificationModal = document.getElementById('notificationModal');
+      const overlay = document.getElementById('overlay');
+      const dismissAlarm = document.getElementById('dismissAlarm');
+      const timerContainer = document.querySelector('.timer-container');
+      const alarmModeRadios = document.querySelectorAll('input[name="alarmMode"]');
+      const singleAlarmInputs = document.getElementById('singleAlarmInputs');
+      const intervalDurationContainer = document.getElementById('intervalDurationContainer');
+      const intervalHours = document.getElementById('intervalHours');
+      const intervalMinutes = document.getElementById('intervalMinutes');
+      const intervalSeconds = document.getElementById('intervalSeconds');
+      const soniDurationSlider = document.getElementById('soniDuration');
+      const soniDurationValue = document.getElementById('soniDurationValue');
 
-            return {
-                time: `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`,
-                ms: `.${String(millisecond).padStart(3, '0')}`
-            };
-        }
+      // Ensure cntic-alarm option exists
+      (function ensureOption() {
+          const exists = Array.from(soundSelect.options).some(o => o.value === 'cntic-alarm');
+          if (!exists) {
+              const opt = document.createElement('option');
+              opt.value = 'cntic-alarm';
+              opt.textContent = 'CNTIC Alarm';
+              soundSelect.appendChild(opt);
+          }
+      })();
 
-        function updateDisplay() {
-            const currentTime = Date.now();
-            elapsedTime = currentTime - startTime;
-            const formatted = formatTime(elapsedTime);
-            display.textContent = formatted.time;
-            milliseconds.textContent = formatted.ms;
+      function formatTime(ms) {
+          const totalSeconds = Math.floor(ms / 1000);
+          const hours = Math.floor(totalSeconds / 3600);
+          const minutes = Math.floor((totalSeconds % 3600) / 60);
+          const seconds = totalSeconds % 60;
+          const millisecond = ms % 1000;
 
-            // Check if alarm should trigger
-            if (alarmEnabled && !alarmTriggered && elapsedTime >= alarmTime) {
-                triggerAlarm();
-            }
-        }
+          return {
+              time: `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`,
+              ms: `.${String(millisecond).padStart(3, '0')}`
+          };
+      }
 
-        function start() {
-            if (!isRunning) {
-                startTime = Date.now() - elapsedTime;
-                timerInterval = setInterval(updateDisplay, 10);
-                isRunning = true;
-                
-                startBtn.disabled = true;
-                pauseBtn.disabled = false;
-                lapBtn.disabled = false;
-                startBtn.textContent = 'Resume';
-            }
-        }
+      function updateDisplay() {
+          const currentTime = Date.now();
+          elapsedTime = currentTime - startTime;
+          const formatted = formatTime(elapsedTime);
+          display.textContent = formatted.time;
+          milliseconds.textContent = formatted.ms;
 
-        function pause() {
-            if (isRunning) {
-                clearInterval(timerInterval);
-                isRunning = false;
-                
-                startBtn.disabled = false;
-                pauseBtn.disabled = true;
-                lapBtn.disabled = true;
-            }
-        }
+          // Check if alarm should trigger
+          if (alarmEnabled && isRunning) {
+              if (alarmMode === 'single') {
+                  // Single alarm mode - trigger once
+                  if (!alarmTriggered && elapsedTime >= alarmTime) {
+                      triggerAlarm();
+                  }
+              } else if (alarmMode === 'interval') {
+                  // Interval mode - trigger every alarmTime milliseconds
+                  if (elapsedTime >= alarmTime) {
+                      const intervalsPassed = Math.floor(elapsedTime / alarmTime);
+                      const expectedTriggers = intervalsPassed;
+                      
+                      // Check if we need to trigger a new interval
+                      if (intervalSoniCount < expectedTriggers) {
+                          intervalSoniCount = expectedTriggers;
+                          triggerIntervalSoni();
+                      }
+                  }
+              }
+          }
+      }
 
-        function reset() {
-            clearInterval(timerInterval);
-            isRunning = false;
-            elapsedTime = 0;
-            lapCounter = 0;
-            alarmTriggered = false;
-            
-            display.textContent = '00:00:00';
-            milliseconds.textContent = '.000';
-            lapsList.innerHTML = '';
-            lapsContainer.style.display = 'none';
-            
-            startBtn.disabled = false;
-            pauseBtn.disabled = true;
-            lapBtn.disabled = true;
-            startBtn.textContent = 'Start';
+      function start() {
+          if (!isRunning) {
+              startTime = Date.now() - elapsedTime;
+              timerInterval = setInterval(updateDisplay, 10);
+              isRunning = true;
+              
+              startBtn.disabled = true;
+              pauseBtn.disabled = false;
+              lapBtn.disabled = false;
+              startBtn.textContent = 'Resume';
+          }
+      }
 
-            // Remove alarm animation
-            timerContainer.classList.remove('alarm-triggered');
-            display.classList.remove('alarm-triggered');
-        }
+      function pause() {
+          if (isRunning) {
+              clearInterval(timerInterval);
+              isRunning = false;
+              
+              startBtn.disabled = false;
+              pauseBtn.disabled = true;
+              lapBtn.disabled = true;
+          }
+      }
 
-        function addLap() {
-            if (isRunning) {
-                lapCounter++;
-                const formatted = formatTime(elapsedTime);
-                
-                const lapItem = document.createElement('div');
-                lapItem.className = 'lap-item';
-                lapItem.innerHTML = `
-                    <span class="lap-number">Lap ${lapCounter}</span>
-                    <span class="lap-time">${formatted.time}${formatted.ms}</span>
-                `;
-                
-                lapsList.insertBefore(lapItem, lapsList.firstChild);
-                lapsContainer.style.display = 'block';
-            }
-        }
+      function reset() {
+          clearInterval(timerInterval);
+          isRunning = false;
+          elapsedTime = 0;
+          lapCounter = 0;
+          alarmTriggered = false;
+          lastAlarmTrigger = 0;
+          intervalSoniCount = 0;
+          
+          display.textContent = '00:00:00';
+          milliseconds.textContent = '.000';
+          lapsList.innerHTML = '';
+          lapsContainer.style.display = 'none';
+          
+          startBtn.disabled = false;
+          pauseBtn.disabled = true;
+          lapBtn.disabled = true;
+          startBtn.textContent = 'Start';
 
-        function toggleFullscreen() {
-            if (!document.fullscreenElement && !document.webkitFullscreenElement && !document.mozFullScreenElement) {
-                // Enter fullscreen
-                if (document.documentElement.requestFullscreen) {
-                    document.documentElement.requestFullscreen();
-                } else if (document.documentElement.webkitRequestFullscreen) {
-                    document.documentElement.webkitRequestFullscreen();
-                } else if (document.documentElement.mozRequestFullScreen) {
-                    document.documentElement.mozRequestFullScreen();
-                }
-                fullscreenBtn.textContent = '⛶ Exit Fullscreen';
-            } else {
-                // Exit fullscreen
-                if (document.exitFullscreen) {
-                    document.exitFullscreen();
-                } else if (document.webkitExitFullscreen) {
-                    document.webkitExitFullscreen();
-                } else if (document.mozCancelFullScreen) {
-                    document.mozCancelFullScreen();
-                }
-                fullscreenBtn.textContent = '⛶ Fullscreen';
-            }
-        }
+          // Remove alarm animation and stop any playing audio
+          timerContainer.classList.remove('alarm-triggered');
+          display.classList.remove('alarm-triggered');
 
-        // Listen for fullscreen changes
-        document.addEventListener('fullscreenchange', () => {
-            if (!document.fullscreenElement) {
-                fullscreenBtn.textContent = '⛶ Fullscreen';
-            }
-        });
+          stopWavIfPlaying();
+      }
 
-        document.addEventListener('webkitfullscreenchange', () => {
-            if (!document.webkitFullscreenElement) {
-                fullscreenBtn.textContent = '⛶ Fullscreen';
-            }
-        });
+      function addLap() {
+          if (isRunning) {
+              lapCounter++;
+              const formatted = formatTime(elapsedTime);
+              
+              const lapItem = document.createElement('div');
+              lapItem.className = 'lap-item';
+              lapItem.innerHTML = `
+                  <span class="lap-number">Lap ${lapCounter}</span>
+                  <span class="lap-time">${formatted.time}${formatted.ms}</span>
+              `;
+              
+              lapsList.insertBefore(lapItem, lapsList.firstChild);
+              lapsContainer.style.display = 'block';
+          }
+      }
 
-        document.addEventListener('mozfullscreenchange', () => {
-            if (!document.mozFullScreenElement) {
-                fullscreenBtn.textContent = '⛶ Fullscreen';
-            }
-        });
+      function toggleFullscreen() {
+          if (!document.fullscreenElement && !document.webkitFullscreenElement && !document.mozFullScreenElement) {
+              // Enter fullscreen
+              if (document.documentElement.requestFullscreen) {
+                  document.documentElement.requestFullscreen();
+              } else if (document.documentElement.webkitRequestFullscreen) {
+                  document.documentElement.webkitRequestFullscreen();
+              } else if (document.documentElement.mozRequestFullScreen) {
+                  document.documentElement.mozRequestFullScreen();
+              }
+              fullscreenBtn.textContent = '⛶ Exit Fullscreen';
+          } else {
+              // Exit fullscreen
+              if (document.exitFullscreen) {
+                  document.exitFullscreen();
+              } else if (document.webkitExitFullscreen) {
+                  document.webkitExitFullscreen();
+              } else if (document.mozCancelFullScreen) {
+                  document.mozCancelFullScreen();
+              }
+              fullscreenBtn.textContent = '⛶ Fullscreen';
+          }
+      }
 
-        startBtn.addEventListener('click', start);
-        pauseBtn.addEventListener('click', pause);
-        resetBtn.addEventListener('click', reset);
-        lapBtn.addEventListener('click', addLap);
-        fullscreenBtn.addEventListener('click', toggleFullscreen);
+      // Listen for fullscreen changes
+      document.addEventListener('fullscreenchange', () => {
+          if (!document.fullscreenElement) {
+              fullscreenBtn.textContent = '⛶ Fullscreen';
+          }
+      });
 
-        // Alarm functionality
-        function updateAlarmTime() {
-            const hours = parseInt(alarmHours.value) || 0;
-            const minutes = parseInt(alarmMinutes.value) || 0;
-            const seconds = parseInt(alarmSeconds.value) || 0;
-            alarmTime = (hours * 3600 + minutes * 60 + seconds) * 1000;
-            
-            if (alarmEnabled) {
-                const formatted = formatTime(alarmTime);
-                alarmStatusText.textContent = `Alarm set for: ${formatted.time}`;
-            }
-        }
+      document.addEventListener('webkitfullscreenchange', () => {
+          if (!document.webkitFullscreenElement) {
+              fullscreenBtn.textContent = '⛶ Fullscreen';
+          }
+      });
 
-        alarmToggle.addEventListener('change', function() {
-            alarmEnabled = this.checked;
-            alarmTriggered = false;
-            
-            if (alarmEnabled) {
-                updateAlarmTime();
-                alarmStatus.classList.add('active');
-                alarmHours.disabled = true;
-                alarmMinutes.disabled = true;
-                alarmSeconds.disabled = true;
-            } else {
-                alarmStatus.classList.remove('active');
-                alarmStatusText.textContent = 'Alarm disabled';
-                alarmHours.disabled = false;
-                alarmMinutes.disabled = false;
-                alarmSeconds.disabled = false;
-                timerContainer.classList.remove('alarm-triggered');
-                display.classList.remove('alarm-triggered');
-            }
-        });
+      document.addEventListener('mozfullscreenchange', () => {
+          if (!document.mozFullScreenElement) {
+              fullscreenBtn.textContent = '⛶ Fullscreen';
+          }
+      });
 
-        alarmHours.addEventListener('input', updateAlarmTime);
-        alarmMinutes.addEventListener('input', updateAlarmTime);
-        alarmSeconds.addEventListener('input', updateAlarmTime);
+      startBtn.addEventListener('click', start);
+      pauseBtn.addEventListener('click', pause);
+      resetBtn.addEventListener('click', reset);
+      lapBtn.addEventListener('click', addLap);
+      fullscreenBtn.addEventListener('click', toggleFullscreen);
 
-        soundSelect.addEventListener('change', function() {
-            currentSound = this.value;
-        });
+      // Alarm functionality
+      alarmModeRadios.forEach(radio => {
+          radio.addEventListener('change', function() {
+              alarmMode = this.value;
+              
+              // Toggle visibility of inputs
+              if (alarmMode === 'single') {
+                  singleAlarmInputs.style.display = 'flex';
+                  intervalDurationContainer.style.display = 'none';
+              } else {
+                  singleAlarmInputs.style.display = 'none';
+                  intervalDurationContainer.style.display = 'block';
+              }
+              
+              updateAlarmTime();
+              // Reset interval counter when mode changes
+              intervalSoniCount = 0;
+              lastAlarmTrigger = 0;
+          });
+      });
 
-        function playSound(type) {
-            if (!audioContext) {
-                audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            }
+      // Soni duration slider
+      soniDurationSlider.addEventListener('input', function() {
+          soniDuration = parseInt(this.value);
+          soniDurationValue.textContent = soniDuration;
+      });
 
-            const oscillator = audioContext.createOscillator();
-            const gainNode = audioContext.createGain();
-            
-            oscillator.connect(gainNode);
-            gainNode.connect(audioContext.destination);
+      // Interval time inputs
+      intervalHours.addEventListener('input', updateAlarmTime);
+      intervalMinutes.addEventListener('input', updateAlarmTime);
+      intervalSeconds.addEventListener('input', updateAlarmTime);
 
-            // Different sound patterns
-            switch(type) {
-                case 'beep':
-                    oscillator.frequency.value = 800;
-                    oscillator.type = 'square';
-                    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
-                    oscillator.start(audioContext.currentTime);
-                    oscillator.stop(audioContext.currentTime + 0.5);
-                    break;
-                case 'bell':
-                    oscillator.frequency.value = 1000;
-                    oscillator.type = 'sine';
-                    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 1);
-                    oscillator.start(audioContext.currentTime);
-                    oscillator.stop(audioContext.currentTime + 1);
-                    break;
-                case 'chime':
-                    oscillator.frequency.value = 523.25; // C5
-                    oscillator.type = 'sine';
-                    gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
-                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 1.5);
-                    oscillator.start(audioContext.currentTime);
-                    oscillator.stop(audioContext.currentTime + 1.5);
-                    
-                    // Add second note for chime effect
-                    setTimeout(() => {
-                        const osc2 = audioContext.createOscillator();
-                        const gain2 = audioContext.createGain();
-                        osc2.connect(gain2);
-                        gain2.connect(audioContext.destination);
-                        osc2.frequency.value = 659.25; // E5
-                        osc2.type = 'sine';
-                        gain2.gain.setValueAtTime(0.2, audioContext.currentTime);
-                        gain2.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 1.5);
-                        osc2.start(audioContext.currentTime);
-                        osc2.stop(audioContext.currentTime + 1.5);
-                    }, 200);
-                    break;
-            }
-        }
+      function updateAlarmTime() {
+          if (alarmMode === 'single') {
+              const hours = parseInt(alarmHours.value) || 0;
+              const minutes = parseInt(alarmMinutes.value) || 0;
+              const seconds = parseInt(alarmSeconds.value) || 0;
+              alarmTime = (hours * 3600 + minutes * 60 + seconds) * 1000;
+          } else {
+              // Interval mode uses Hours:Minutes:Seconds inputs
+              const hours = parseInt(intervalHours.value) || 0;
+              const minutes = parseInt(intervalMinutes.value) || 0;
+              const seconds = parseInt(intervalSeconds.value) || 0;
+              alarmTime = (hours * 3600 + minutes * 60 + seconds) * 1000;
+          }
+          
+          if (alarmEnabled) {
+              const formatted = formatTime(alarmTime);
+              if (alarmMode === 'single') {
+                  alarmStatusText.textContent = `Alarm set for: ${formatted.time}`;
+              } else {
+                  alarmStatusText.textContent = `Interval Soni every: ${formatted.time}`;
+              }
+          }
+      }
 
-        function triggerAlarm() {
-            alarmTriggered = true;
-            
-            // Visual effects
-            timerContainer.classList.add('alarm-triggered');
-            display.classList.add('alarm-triggered');
-            
-            // Show notification modal
-            overlay.classList.add('show');
-            notificationModal.classList.add('show');
-            
-            // Play sound repeatedly
-            const soundInterval = setInterval(() => {
-                if (!alarmTriggered || !notificationModal.classList.contains('show')) {
-                    clearInterval(soundInterval);
-                    return;
-                }
-                playSound(currentSound);
-            }, 1000);
-            
-            // Auto-pause the timer
-            pause();
-        }
+      alarmToggle.addEventListener('change', function() {
+          alarmEnabled = this.checked;
+          alarmTriggered = false;
+          intervalSoniCount = 0;
+          lastAlarmTrigger = 0;
+          
+          if (alarmEnabled) {
+              updateAlarmTime();
+              alarmStatus.classList.add('active');
+              alarmHours.disabled = true;
+              alarmMinutes.disabled = true;
+              alarmSeconds.disabled = true;
+              intervalHours.disabled = true;
+              intervalMinutes.disabled = true;
+              intervalSeconds.disabled = true;
+              soniDurationSlider.disabled = true;
+              alarmModeRadios.forEach(r => r.disabled = true);
+          } else {
+              alarmStatus.classList.remove('active');
+              alarmStatusText.textContent = 'Alarm disabled';
+              alarmHours.disabled = false;
+              alarmMinutes.disabled = false;
+              alarmSeconds.disabled = false;
+              intervalHours.disabled = false;
+              intervalMinutes.disabled = false;
+              intervalSeconds.disabled = false;
+              soniDurationSlider.disabled = false;
+              alarmModeRadios.forEach(r => r.disabled = false);
+              timerContainer.classList.remove('alarm-triggered');
+              display.classList.remove('alarm-triggered');
+              stopWavIfPlaying();
+          }
+      });
 
-        dismissAlarm.addEventListener('click', function() {
-            overlay.classList.remove('show');
-            notificationModal.classList.remove('show');
-            timerContainer.classList.remove('alarm-triggered');
-            display.classList.remove('alarm-triggered');
-            alarmToggle.checked = false;
-            alarmEnabled = false;
-            alarmStatus.classList.remove('active');
-            alarmStatusText.textContent = 'Alarm disabled';
-            alarmHours.disabled = false;
-            alarmMinutes.disabled = false;
-            alarmSeconds.disabled = false;
-        });
+      alarmHours.addEventListener('input', updateAlarmTime);
+      alarmMinutes.addEventListener('input', updateAlarmTime);
+      alarmSeconds.addEventListener('input', updateAlarmTime);
 
-        // Keyboard shortcuts
-        document.addEventListener('keydown', (e) => {
-            if (e.code === 'Space') {
-                e.preventDefault();
-                if (!isRunning && !startBtn.disabled) {
-                    start();
-                } else if (isRunning) {
-                    pause();
-                }
-            } else if (e.code === 'KeyR') {
-                reset();
-            } else if (e.code === 'KeyL' && isRunning) {
-                addLap();
-            } else if (e.code === 'KeyF') {
-                toggleFullscreen();
-            }
-        });
-    </script>
+      soundSelect.addEventListener('change', function() {
+          currentSound = this.value;
+      });
+
+      function playSound(type) {
+          if (type === 'cntic-alarm') {
+              const p = wavAlarm.play();
+              if (p && typeof p.catch === 'function') p.catch(() => {});
+              return;
+          }
+
+          if (!audioContext) {
+              audioContext = new (window.AudioContext || window.webkitAudioContext)();
+          }
+
+          const oscillator = audioContext.createOscillator();
+          const gainNode = audioContext.createGain();
+          
+          oscillator.connect(gainNode);
+          gainNode.connect(audioContext.destination);
+
+          switch(type) {
+              case 'beep':
+                  oscillator.frequency.value = 800;
+                  oscillator.type = 'square';
+                  gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                  gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+                  oscillator.start(audioContext.currentTime);
+                  oscillator.stop(audioContext.currentTime + 0.5);
+                  break;
+              case 'bell':
+                  oscillator.frequency.value = 1000;
+                  oscillator.type = 'sine';
+                  gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                  gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 1);
+                  oscillator.start(audioContext.currentTime);
+                  oscillator.stop(audioContext.currentTime + 1);
+                  break;
+              case 'chime':
+                  oscillator.frequency.value = 523.25;
+                  oscillator.type = 'sine';
+                  gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+                  gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 1.5);
+                  oscillator.start(audioContext.currentTime);
+                  oscillator.stop(audioContext.currentTime + 1.5);
+                  
+                  setTimeout(() => {
+                      const osc2 = audioContext.createOscillator();
+                      const gain2 = audioContext.createGain();
+                      osc2.connect(gain2);
+                      gain2.connect(audioContext.destination);
+                      osc2.frequency.value = 659.25;
+                      osc2.type = 'sine';
+                      gain2.gain.setValueAtTime(0.2, audioContext.currentTime);
+                      gain2.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 1.5);
+                      osc2.start(audioContext.currentTime);
+                      osc2.stop(audioContext.currentTime + 1.5);
+                  }, 200);
+                  break;
+          }
+      }
+
+      function triggerAlarm() {
+          alarmTriggered = true;
+          
+          timerContainer.classList.add('alarm-triggered');
+          display.classList.add('alarm-triggered');
+          
+          overlay.classList.add('show');
+          notificationModal.classList.add('show');
+          
+          if (currentSound === 'cntic-alarm') {
+              const p = wavAlarm.play();
+              if (p && typeof p.catch === 'function') p.catch(() => {});
+          } else {
+              const soundInterval = setInterval(() => {
+                  if (!alarmTriggered || !notificationModal.classList.contains('show')) {
+                      clearInterval(soundInterval);
+                      return;
+                  }
+                  playSound(currentSound);
+              }, 1000);
+              playSound(currentSound);
+          }
+
+          pause();
+      }
+
+      function triggerIntervalSoni() {
+          timerContainer.classList.add('alarm-triggered');
+          display.classList.add('alarm-triggered');
+          
+          // Clear any existing timeout
+          if (soniTimeout) {
+              clearTimeout(soniTimeout);
+          }
+          
+          // Remove visual effect after 500ms (brief flash)
+          setTimeout(() => {
+              timerContainer.classList.remove('alarm-triggered');
+              display.classList.remove('alarm-triggered');
+          }, 500);
+          
+          if (currentSound === 'cntic-alarm') {
+              const tempWav = new Audio('cntic-alarm.wav');
+              tempWav.loop = false;
+              const p = tempWav.play();
+              if (p && typeof p.catch === 'function') p.catch(() => {});
+              
+              // Stop the sound after soniDuration seconds
+              soniTimeout = setTimeout(() => {
+                  tempWav.pause();
+                  tempWav.currentTime = 0;
+              }, soniDuration * 1000);
+          } else {
+              // Play sound repeatedly for the duration
+              let soundCount = 0;
+              const maxSounds = Math.ceil(soniDuration); // Number of beeps based on duration
+              
+              const soundInterval = setInterval(() => {
+                  if (soundCount >= maxSounds) {
+                      clearInterval(soundInterval);
+                      return;
+                  }
+                  playSound(currentSound);
+                  soundCount++;
+              }, 1000); // Play every second
+              
+              playSound(currentSound); // Play first sound immediately
+          }
+          
+          alarmStatusText.textContent = `Interval Soni #${intervalSoniCount} (every ${intervalDuration}s, plays ${soniDuration}s)`;
+      }
+
+      function stopWavIfPlaying() {
+          try {
+              if (!wavAlarm.paused) {
+                  wavAlarm.pause();
+                  wavAlarm.currentTime = 0;
+              }
+          } catch (err) {
+              // ignore errors
+          }
+      }
+
+      dismissAlarm.addEventListener('click', function() {
+          overlay.classList.remove('show');
+          notificationModal.classList.remove('show');
+          timerContainer.classList.remove('alarm-triggered');
+          display.classList.remove('alarm-triggered');
+          alarmToggle.checked = false;
+          alarmEnabled = false;
+          alarmStatus.classList.remove('active');
+          alarmStatusText.textContent = 'Alarm disabled';
+          alarmHours.disabled = false;
+          alarmMinutes.disabled = false;
+          alarmSeconds.disabled = false;
+          intervalDurationSlider.disabled = false;
+          soniDurationSlider.disabled = false;
+          alarmModeRadios.forEach(r => r.disabled = false);
+
+          stopWavIfPlaying();
+          alarmTriggered = false;
+          intervalSoniCount = 0;
+          lastAlarmTrigger = 0;
+          
+          // Clear any active soni timeout
+          if (soniTimeout) {
+              clearTimeout(soniTimeout);
+              soniTimeout = null;
+          }
+      });
+
+      // Keyboard shortcuts
+      document.addEventListener('keydown', (e) => {
+          if (e.code === 'Space') {
+              e.preventDefault();
+              if (!isRunning && !startBtn.disabled) {
+                  start();
+              } else if (isRunning) {
+                  pause();
+              }
+          } else if (e.code === 'KeyR') {
+              reset();
+          } else if (e.code === 'KeyL' && isRunning) {
+              addLap();
+          } else if (e.code === 'KeyF') {
+              toggleFullscreen();
+          }
+      });
+  </script>
+
 </body>
 </html>
